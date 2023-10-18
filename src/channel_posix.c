@@ -23,9 +23,12 @@ static void *channel_free(void *ptr)
     free(ptr);
 }
 
-/*
-if name[0] == '/', then name is absolute path
-else name is relative path
+/**
+ * @brief Check if the name is absolute path
+ * 
+ * @param name The name of the channel
+ * 
+ * @return 1: absolute path, 0: relative path
 */
 static int is_absolute_name(const char *name)
 {
@@ -37,12 +40,28 @@ static int is_absolute_name(const char *name)
     return 1;
 }
 
+/**
+ * @brief Create a new channel object
+ * 
+ * @param name The name of the channel
+ * @param size The size of the singal message
+ * @param count The maximum number of messages
+ * 
+ * @return channel
+*/
 channel channel_new(const char *name, uint32_t size, uint32_t count)
 {
     mqd_t new_mq;
-    struct mq_attr attr;
-    uint32_t malloc_size = sizeof(channel_t) + strlen(name) + 1;
-    int is_absolute_flag = is_absolute_name(name);
+    struct mq_attr attr = {0};
+    uint32_t malloc_size = 0;
+    int is_absolute_flag = 0;
+
+    if (name == NULL) {
+        return NULL;
+    }
+
+    is_absolute_flag = is_absolute_name(name);
+    malloc_size = sizeof(channel_t) + strlen(name) + 1;
 
     if (!is_absolute_flag) {
         malloc_size += 1;
@@ -86,6 +105,13 @@ channel channel_new(const char *name, uint32_t size, uint32_t count)
     return (channel)ch;
 }
 
+/**
+ * @brief Delete the channel object
+ * 
+ * @param c The channel object
+ * 
+ * @return @{enum channel_ret}
+*/
 int32_t channel_del(channel c)
 {
     channel_t *ch = (channel_t *)c;
@@ -110,13 +136,23 @@ int32_t channel_del(channel c)
     return CHANNEL_OK;
 }
 
+/**
+ * @brief Push a message to the channel
+ * 
+ * @param c The channel object
+ * @param data The message to be sent
+ * @param size The size of the message
+ * @param timeout The timeout value
+ * 
+ * @return @{enum channel_ret}
+*/
 int32_t channel_push(channel c, void *data, uint32_t size, int32_t timeout)
 {
     int ret = 0;
     channel_t *ch = (channel_t *)c;
     const struct timespec *abs_timeout = NULL;
 
-    if (ch == NULL) {
+    if (ch == NULL || data == NULL) {
         return CHANNEL_ERR;
     }
 
@@ -134,13 +170,23 @@ int32_t channel_push(channel c, void *data, uint32_t size, int32_t timeout)
     return CHANNEL_OK;
 }
 
+/**
+ * @brief Pop a message from the channel
+ * 
+ * @param c The channel object
+ * @param data The buffer to store the message
+ * @param size The size of the buffer
+ * @param timeout The timeout value
+ * 
+ * @return @{enum channel_ret}
+*/
 int32_t channel_pop(channel c, void *data, uint32_t size, int32_t timeout)
 {
     int ret = 0;
     channel_t *ch = (channel_t *)c;
     const struct timespec *abs_timeout = NULL;
 
-    if (ch == NULL) {
+    if (ch == NULL || data == NULL) {
         return CHANNEL_ERR;
     }
 
