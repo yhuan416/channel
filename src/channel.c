@@ -18,7 +18,7 @@ static void *channel_free(void *ptr)
     free(ptr);
 }
 
-channel channel_new(uint32_t size, uint32_t count)
+channel channel_new(const char *name, uint32_t size, uint32_t count)
 {
     channel_t *ch = (channel_t *)channel_calloc(sizeof(channel_t), 1);
     if (ch == NULL) {

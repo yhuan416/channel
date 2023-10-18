@@ -5,14 +5,14 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-typedef enum channel_ret {
+enum channel_ret {
     CHANNEL_OK = 0,
     CHANNEL_ERR = -1,
 };
 
 typedef void *channel;
 
-channel channel_new(uint32_t size, uint32_t count);
+channel channel_new(const char *name, uint32_t size, uint32_t count);
 
 int32_t channel_del(channel c);
 
