@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <pthread.h>
 
@@ -44,8 +45,18 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
+    for (int i = 0; i < 11; i++)
+    {
+        char buf[10] = {0};
+        sprintf(buf, "%d", i);
+        ret = channel_push(ch, buf, strlen(buf), CHANNEL_WAIT_FOREVER);
+        printf("channel_push[%d]: %d\n", i, ret);
+    }
+
     // Create a thread
     pthread_create(&tid, NULL, routine, ch);
+
+    sleep(5);
 
     channel_push(ch, "hello world1", strlen("hello world1"), CHANNEL_WAIT_FOREVER);
     channel_push(ch, "hello world2", strlen("hello world2"), CHANNEL_WAIT_FOREVER);
