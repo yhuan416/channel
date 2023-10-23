@@ -52,17 +52,11 @@ int LFQUE_Push(LockFreeQueue *queue, const void *element, uint8_t pri)
                   (queue->totalSize - queue->write) : queue->itemSize;
     
     memcpy(&queue->buffer[queue->write], element, copyLen);
-    // if (memcpy_s(&queue->buffer[queue->write], copyLen, element, copyLen) != 0) {
-    //     return -1;
-    // }
 
     element += copyLen;
     copyLen = queue->itemSize - copyLen;
     if (copyLen > 0) {
         memcpy(queue->buffer, element, copyLen);
-        // if (memcpy_s(queue->buffer, copyLen, element, copyLen) != EOK) {
-        //     return -1;
-        // }
     }
 
     uint32_t write = queue->write + queue->itemSize;
@@ -87,17 +81,11 @@ int LFQUE_Pop(LockFreeQueue *queue, void *element, uint8_t *pri)
                   (queue->totalSize - queue->read) : queue->itemSize;
     
     memcpy(element, &queue->buffer[queue->read], copyLen);
-    // if (memcpy_s(element, copyLen, &queue->buffer[queue->read], copyLen) != 0) {
-    //     return -1;
-    // }
 
     element += copyLen;
     copyLen = queue->itemSize - copyLen;
     if (copyLen > 0) {
         memcpy(element, queue->buffer, copyLen);
-        // if (memcpy_s(element, copyLen, queue->buffer, copyLen) != 0) {
-        //     return -1;
-        // }
     }
 
     uint32_t read = queue->read + queue->itemSize;
